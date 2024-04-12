@@ -3,12 +3,15 @@ import Slider from "../../Components/slides/Slider";
 import "./Home.scss";
 import HomeInfoBox from "./HomeInfoBox";
 
+import { productData } from "../../Components/carousel/data";
+import CarouselItem from "../../Components/carousel/CarouselItem";
+import ProductCarousel from "../../Components/carousel/Carousel";
 const PageHeading = ({ heading, btnText }) => {
   return (
     <>
       <div className="--flex-between">
         <h2 className="--fw-thin">{heading}</h2>
-        <button classname="--btn">{btnText}</button>
+        <button className="--btn">{btnText}</button>
       </div>
       <div className="--hr"></div>
     </>
@@ -16,6 +19,16 @@ const PageHeading = ({ heading, btnText }) => {
 };
 
 const Home = () => {
+  const productss = productData.map((item, index) => (
+    <div key={item.id}>
+      <CarouselItem
+        name={item.name}
+        url={item.imageurl}
+        price={item.price}
+        description={item.description}
+      />
+    </div>
+  ));
   return (
     <>
       <Slider />
@@ -24,6 +37,7 @@ const Home = () => {
         <div className="container">
           <HomeInfoBox />
           <PageHeading heading={"Latest Products"} btnText={"Shop Now >>>>"} />
+          <ProductCarousel products={productss} />
         </div>
       </section>
     </>

@@ -77,7 +77,7 @@ const Header = () => {
               </NavLink>
             </span>
             {cart}
-            <HiOutlineMenuAlt3 />
+            {/* <HiOutlineMenuAlt3 /> */}
           </div>
         </nav>
         <div className={styles["menu-icon"]}>
