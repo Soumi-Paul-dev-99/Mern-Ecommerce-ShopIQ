@@ -1,10 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import "./Slider.scss";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import { sliderData } from "./slider-data";
+import { useNavigate } from "react-router-dom";
+
 const Slider = () => {
   const [currentSlide, setCurrentSllide] = useState(0);
-  const prevSlide = () => {};
-  const nextSlide = () => {};
+  const slideLength = sliderData.length;
+  const autoScroll = true;
+  let slideInterval;
+  const intervalTime = 4000;
+  const navigate = useNavigate();
+  const prevSlide = () => {
+    setCurrentSllide(currentSlide === 0 ? slideLength - 1 : currentSlide - 1);
+  };
+
+  useEffect(() => {
+    setCurrentSllide(0);
+  }, []);
+
+  useEffect(() => {
+    if (autoScroll) {
+      const auto = () => {
+        slideInterval = setInterval(nextSlide, intervalTime);
+      };
+      auto();
+    }
+    return () => clearInterval(slideInterval);
+  }, [currentSlide, intervalTime, autoScroll]);
+
+  const nextSlide = () => {
+    setCurrentSllide(currentSlide === slideLength - 1 ? 0 : currentSlide + 1);
+  };
 
   return (
     <div className="slider">
@@ -22,6 +49,21 @@ const Slider = () => {
             {index === currentSlide && (
               <>
                 <img src={image} alt="slide" />
+                <div className="content">
+                  <span className="span1"></span>
+                  <span className="span2"></span>
+                  <span className="span3"></span>
+                  <span className="span4"></span>
+                  <h2>{heading}</h2>
+                  <p>{desc}</p>
+                  <hr />
+                  <button
+                    className="--btn --btn-primary"
+                    onClick={() => navigate("/shop")}
+                  >
+                    Shop Now
+                  </button>
+                </div>
               </>
             )}
           </div>
