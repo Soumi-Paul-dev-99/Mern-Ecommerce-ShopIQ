@@ -7,6 +7,7 @@ import { productData } from "../../Components/carousel/data";
 import CarouselItem from "../../Components/carousel/CarouselItem";
 import ProductCarousel from "../../Components/carousel/Carousel";
 import ProductCategory from "./ProductCategory";
+import FooterLinks from "../../Components/footer/FooterLinks";
 const PageHeading = ({ heading, btnText }) => {
   return (
     <>
@@ -41,12 +42,21 @@ const Home = () => {
           <ProductCarousel products={productss} />
         </div>
       </section>
-      <section className="--bt-grey">
+      <section className="--bg-grey">
         <div className="container">
           <h3>Categories</h3>
-          <ProductCategory/>
+          <ProductCategory />
         </div>
       </section>
+
+      <section>
+        <div className="container">
+          <HomeInfoBox />
+          <PageHeading heading={"Mobile Phones"} btnText={"Shop Now >>>>"} />
+          <ProductCarousel products={productss} />
+        </div>
+      </section>
+      <FooterLinks />
     </>
   );
 };
