@@ -20,9 +20,25 @@ const login = async (userData) => {
   return response.data;
 };
 
+//Logout User
+
+const logout = async () => {
+  const response = await axios.get(API_URL + "logout");
+  return response.data.message;
+};
+
+//Get Loggin Status
+
+const getLoginStatus = async () => {
+  const response = await axios.get(API_URL + "getLoginStatus ");
+  return response.data;
+};
+
 const authService = {
   register,
   login,
+  logout,
+  getLoginStatus,
 };
 
 export default authService;

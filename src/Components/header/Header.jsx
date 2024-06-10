@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import styles from "./Header.module.scss";
 import { FaShoppingCart, FaTimes } from "react-icons/fa";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout, RESET_AUTH } from "../../redux/features/auth/authSlice";
+import ShowOnLogin, { ShowOnLogout } from "./../hiddenLink/hiddenLink";
 
 export const logo = (
   <div className={styles.logo}>
@@ -20,6 +23,8 @@ export const activeLink = ({ isActive }) =>
 const Header = () => {
   const [showmenu, setShowMenu] = useState(false);
   const [scrollPage, setScrollPage] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const fixNavbar = () => {
     if (window.scrollY > 50) {
@@ -36,6 +41,13 @@ const Header = () => {
   const hidemenu = () => {
     setShowMenu(false);
   };
+
+  const logoutUser = async () => {
+    await dispatch(logout());
+    await dispatch(logout(RESET_AUTH()));
+    navigate("/login");
+  };
+
   const cart = (
     <span className={styles.cart}>
       <Link to="/cart">
@@ -76,15 +88,26 @@ const Header = () => {
           </ul>
           <div className={styles["header-right"]}>
             <span className={styles.links}>
-              <NavLink to={"login"} className={activeLink}>
-                Login
-              </NavLink>
-              <NavLink to={"register"} className={activeLink}>
-                Register
-              </NavLink>
-              <NavLink to={"order-history"} className={activeLink}>
-                My Order
-              </NavLink>
+              <ShowOnLogout>
+                <NavLink to={"login"} className={activeLink}>
+                  Login
+                </NavLink>
+              </ShowOnLogout>
+              <ShowOnLogout>
+                <NavLink to={"register"} className={activeLink}>
+                  Register
+                </NavLink>
+              </ShowOnLogout>
+              <ShowOnLogin>
+                <NavLink to={"order-history"} className={activeLink}>
+                  My Order
+                </NavLink>
+              </ShowOnLogin>
+              <ShowOnLogin>
+                <Link to={"/"} onClick={logoutUser}>
+                  Logout
+                </Link>
+              </ShowOnLogin>
             </span>
             {cart}
             {/* <HiOutlineMenuAlt3 /> */}
