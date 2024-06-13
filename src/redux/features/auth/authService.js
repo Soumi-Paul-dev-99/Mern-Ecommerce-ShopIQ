@@ -2,8 +2,8 @@ import axios from "axios";
 
 // const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-// export const API_URL = `http://localhost:5000/api/users/`;
-export const API_URL = `https://mern-ecommerce-shopiq-backend.onrender.com/api/users/`;
+export const API_URL = `http://localhost:5000/api/users/`;
+// export const API_URL = `https://mern-ecommerce-shopiq-backend.onrender.com/api/users/`;
 
 //Register User
 
