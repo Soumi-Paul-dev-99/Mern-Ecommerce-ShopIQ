@@ -1,3 +1,4 @@
+import env from "react-dotenv";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { useEffect } from "react";
 import Home from "./Pages/Home/Home";

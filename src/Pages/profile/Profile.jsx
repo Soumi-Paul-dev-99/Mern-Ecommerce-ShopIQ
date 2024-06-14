@@ -1,12 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Profile.scss";
 import PageMenu from "../../Components/PageMenu/PageMenu";
 import { useDispatch, useSelector } from "react-redux";
 import Card from "../../Components/card/Card";
 import Loader from "../../Components/loader/Loader";
-import { useState } from "react";
-import { getUser, updateUser } from "../../redux/features/auth/authSlice";
+import {
+  getUser,
+  updatePhoto,
+  updateUser,
+} from "../../redux/features/auth/authSlice";
 import { AiOutlineCloudUpload } from "react-icons/ai";
+import { toast } from "react-toastify";
+import { shortenText } from "../../utils";
+
+const cloud_name = "dogmq5rv3";
+const upload_preset = "agyilx2i";
+const url = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
 
 const Profile = () => {
   const { isLoading, user } = useSelector((state) => state.auth);
@@ -17,9 +26,9 @@ const Profile = () => {
     role: user?.role || "",
     photo: user?.photo || "",
     address: user?.address || {
-      address: user?.address || "",
-      state: user?.address || "",
-      country: user?.address || "",
+      address: user?.address.address || "",
+      state: user?.address.state || "",
+      country: user?.address.country || "",
     },
   };
 
@@ -42,49 +51,87 @@ const Profile = () => {
         phone: user?.phone || "",
         role: user?.role || "",
         photo: user?.photo || "",
-        address: user?.address || {
-          address: user?.address || "",
-          state: user?.address || "",
-          country: user?.address || "",
+        address: {
+          address: user?.address.address || "",
+          state: user?.address.state || "",
+          country: user?.address.country || "",
         },
       });
     }
-  }, [dispatch]);
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfile({ ...profile, [name]: value });
   };
+
   const handleImageChange = (e) => {
     setProfileImage(e.target.files[0]);
     setImagePreview(URL.createObjectURL(e.target.files[0]));
   };
 
+  const savePhoto = async () => {
+    let imageURL;
+    try {
+      if (
+        profileImage !== null &&
+        (profileImage.type === "image/jpeg" ||
+          profileImage.type === "image/jpg" ||
+          profileImage.type === "image/png")
+      ) {
+        const image = new FormData();
+        image.append("file", profileImage);
+        image.append("upload_preset", upload_preset); // Correctly append upload_preset
+
+        const response = await fetch(url, { method: "post", body: image });
+        const imgData = await response.json();
+        imageURL = imgData.url.toString();
+
+        // Save image to MongoDB
+        const userData = {
+          photo: profileImage ? imageURL : profile.photo,
+        };
+        await dispatch(updatePhoto(userData));
+        setImagePreview(null);
+        toast.success("Photo uploaded successfully!");
+      } else {
+        toast.error("Please select a valid image file (jpeg, jpg, png).");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   const saveProfile = async (e) => {
     e.preventDefault();
 
+    // Save profile updates
     const userData = {
-      name: profile.name,
-      phone: profile.phone,
-
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      role: user?.role || "",
+      photo: user?.photo || "",
       address: {
-        address: profile.address,
-        state: profile.state,
-        country: profile.country,
+        address: user?.address.address || "",
+        state: user?.address.state || "",
+        country: user?.address.country || "",
       },
     };
-    // console.log(userData);
     await dispatch(updateUser(userData));
+    toast.success("Profile updated successfully!");
   };
 
-  const savePhoto = async () => {};
+  console.log("Rendering PageMenu");
 
   return (
     <>
       <section>
         {isLoading && <Loader />}
         <div className="container">
-          <PageMenu />
+          <div className="page-menu-container">
+            <PageMenu />
+          </div>
         </div>
         <h2>Profile</h2>
         <div className="--flex-start profile">
@@ -119,7 +166,6 @@ const Profile = () => {
                       accept="image/*"
                       name="image"
                       onChange={handleImageChange}
-                      required
                     />
                   </p>
                   <p>
@@ -136,11 +182,9 @@ const Profile = () => {
                     <label>Email :</label>
                     <input
                       type="email"
-                      accept="email"
                       name="email"
                       value={profile?.email}
                       onChange={handleInputChange}
-                     
                       disabled
                     />
                   </p>
@@ -148,7 +192,6 @@ const Profile = () => {
                     <label>Phone :</label>
                     <input
                       type="text"
-                      accept="phone"
                       name="phone"
                       value={profile?.phone}
                       onChange={handleInputChange}
@@ -159,8 +202,8 @@ const Profile = () => {
                     <label>Address :</label>
                     <input
                       type="text"
-                      name="adddress"
-                      value={profile?.address?.address}
+                      name="address"
+                      value={profile?.address.address}
                       onChange={handleInputChange}
                       required
                     />
@@ -170,7 +213,7 @@ const Profile = () => {
                     <input
                       type="text"
                       name="state"
-                      value={profile?.address?.state}
+                      value={profile?.address.state}
                       onChange={handleInputChange}
                       required
                     />
@@ -180,7 +223,7 @@ const Profile = () => {
                     <input
                       type="text"
                       name="country"
-                      value={profile?.address?.country}
+                      value={profile?.address.country}
                       onChange={handleInputChange}
                       required
                     />
@@ -195,6 +238,14 @@ const Profile = () => {
         </div>
       </section>
     </>
+  );
+};
+
+export const UserName = () => {
+  const { user } = useSelector((state) => state.auth);
+  const username = user?.name || "...";
+  return (
+    <span style={{ color: "#ff7722" }}>Hi, {shortenText(username, 9)}| </span>
   );
 };
 
